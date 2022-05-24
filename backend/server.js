@@ -41,10 +41,7 @@ const myBusinessLogic = (req, res) => {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use(myLogger);
-app.use(myAuth);
-app.use(myBusinessLogic);
-app.use(errorHandler);
+app.use(myLogger, myAuth, myBusinessLogic, errorHandler);
 
 /* app.get("/", (req, res) => {
   res.send("HOMEPAGE");
