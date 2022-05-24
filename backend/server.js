@@ -11,6 +11,11 @@ var corsOptions = {
   optionsSuccessStatus: 200,
 };
 
+const errorHandler = (err, req, res, next) => {
+  console.log(err);
+  res.status(500).json("Something went wrong!");
+};
+
 const myLogger = (req, res, next) => {
   console.log("épp loggolok...");
   next();
@@ -20,6 +25,8 @@ const myAuth = (req, res, next) => {
   console.log("épp autentikálok...");
   const userId = 1;
   //req.userId = userId;
+  let a;
+  console.log(a.b.c);
   res.locals.userId = userId;
   next();
 };
@@ -31,16 +38,17 @@ const myBusinessLogic = (req, res) => {
   res.json("Siker!");
 };
 
+app.use(cors(corsOptions));
+app.use(express.json());
+
 app.use(myLogger);
 app.use(myAuth);
 app.use(myBusinessLogic);
+app.use(errorHandler);
 
-/* app.use(cors(corsOptions));
-app.use(express.json());
-
-app.get("/", (req, res) => {
+/* app.get("/", (req, res) => {
   res.send("HOMEPAGE");
-}); */
+});  */
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
