@@ -4,7 +4,7 @@ const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require("../model/user");
 const mongoose = require("mongoose");
 
-test("reterns an empty list for new users", async () => {
+test("returns an empty list for new users", async () => {
   //given
   const mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
@@ -15,8 +15,9 @@ test("reterns an empty list for new users", async () => {
     email: "ggg@ggg.gg",
     googleId: "12345",
   });
-  const client = mockserver.agent(app);
   await newUser.save();
+
+  const client = mockserver.agent(app);
   client.set("authorization", newUser._id);
 
   //when
@@ -26,6 +27,7 @@ test("reterns an empty list for new users", async () => {
   expect(response.status).toBe(200);
   const responseData = response.body;
   expect(responseData.user.dashboards).toStrictEqual([]);
+
   await connection.disconnect();
   await mongod.stop();
 });
