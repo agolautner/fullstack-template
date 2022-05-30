@@ -4,7 +4,7 @@ const User = require("../model/user");
 
 router.get("/", auth({ block: true }), async (req, res) => {
   const user = await User.findById(res.locals.userId);
-  if (!user) return res.status(404);
+  //if (!user) return res.status(404);
   res.json({ user });
 });
 
