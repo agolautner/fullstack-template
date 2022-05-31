@@ -1,6 +1,6 @@
 const app = require("../app");
 const mockserver = require("supertest");
-const User = require("../model/user");
+const User = require("../models/user");
 const { startDb, stopDb, deleteAll } = require("./util/inMemoryDb");
 
 describe("/api/dashboards GET tests", () => {

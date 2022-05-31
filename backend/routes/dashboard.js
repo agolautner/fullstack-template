@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { auth } = require("../middlewares/auth");
-const User = require("../model/user");
+const User = require("../models/user");
 
 router.get("/", auth({ block: true }), async (req, res) => {
   const user = await User.findById(res.locals.userId);
