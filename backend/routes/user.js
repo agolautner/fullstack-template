@@ -1,3 +1,4 @@
+require("dotenv").config();
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
@@ -6,11 +7,11 @@ const http = httpModule();
 
 const config = {
   google: {
-    client_id: "",
-    client_secret: "",
-    redirect_uri: "",
-    token_endpoint: "",
-    grant_type: "authorization_code",
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    redirect_uri: process.env.REDIRECT_URI,
+    token_endpoint: process.env.TOKEN_ENDPOINT,
+    //grant_type: "authorization_code",
   },
   /*   facebook: {
     clientId: "",
@@ -21,12 +22,12 @@ const config = {
 };
 
 router.post("/login", async (req, res) => {
-  const { payload } = req.body;
-  if (!payload) return res.status(400).send("All inputs are required");
+  const payload = req.body;
+  if (!payload) return res.status(400).send("All inputs are required 1");
 
   const code = payload.code;
   const provider = payload.provider;
-  if (!(code && provider)) return res.status(400).send("All inputs required");
+  if (!(code && provider)) return res.status(400).send("All inputs required 2");
   if (!Object.keys(config).includes(provider))
     return res.status(400).send("Wrong payload!");
 
@@ -36,6 +37,7 @@ router.post("/login", async (req, res) => {
     client_secret: config[provider].client_secret,
     redirect_uri: config[provider].redirect_uri,
     grant_type: "authorization_code",
+    scope: "openid",
   });
 
   if (!response) return res.sendStatus(500);
@@ -49,10 +51,10 @@ router.post("/login", async (req, res) => {
   const user = await User.findOneAndUpdate(
     { [key]: decoded.sub },
     { providers: { [provider]: decoded.sub } },
-    { upsert: true }
+    { new: true }
   );
   const sessionToken = jwt.sign(
-    { userId: user._id, providers: user.providers },
+    { userId: user.id, providers: user.providers },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );

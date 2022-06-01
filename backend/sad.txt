@@ -1,0 +1,1 @@
+"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=423125049963-vnhlm59vvirdjsquu0efhqvq5u91orks.apps.googleusercontent.com&scope=openid%20email&redirect_uri=http://localhost:3000/callback
