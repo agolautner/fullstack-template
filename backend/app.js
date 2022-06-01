@@ -4,7 +4,8 @@ const cors = require("cors");
 const { logger } = require("./middlewares/logger");
 const { auth } = require("./middlewares/auth");
 const { errorHandler } = require("./middlewares/errorHandler");
-const dashboard = require("./routes/dashboard");
+const dashboardRoutes = require("./routes/dashboard");
+const userRoutes = require("./routes/user");
 
 const app = express();
 
@@ -17,7 +18,8 @@ app.use(express.json());
 
 app.use(logger);
 
-app.use("/api/dashboards", dashboard);
+app.use("/api/dashboards", dashboardRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/api/public", (req, res) => {
   console.log("public");

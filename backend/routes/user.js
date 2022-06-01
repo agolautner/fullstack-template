@@ -9,7 +9,7 @@ const config = {
     client_id: "",
     client_secret: "",
     redirect_uri: "",
-    token_ndpoint: "",
+    token_endpoint: "",
     grant_type: "authorization_code",
   },
   /*   facebook: {
@@ -20,7 +20,7 @@ const config = {
   }, */
 };
 
-router.post("/api/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { payload } = req.body;
   if (!payload) return res.status(400).send("All inputs are required");
 
@@ -44,6 +44,19 @@ router.post("/api/login", async (req, res) => {
   const decoded = jwt.decode(response.data.id_token);
   if (!decoded) return res.sendStatus(500);
 
+  //megkeresi a user-t, ha nincs csinál egyet:
   const key = "providers." + provider;
-  const user = await User.find({ [key]: decoded.sub });
+  const user = await User.findOneAndUpdate(
+    { [key]: decoded.sub },
+    { providers: { [provider]: decoded.sub } },
+    { upsert: true }
+  );
+  const sessionToken = jwt.sign(
+    { userId: user._id, providers: user.providers },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  res.json({ sessionToken });
 });
+
+module.exports = router;
