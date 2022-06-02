@@ -11,7 +11,15 @@ const config = {
     client_secret: process.env.CLIENT_SECRET,
     redirect_uri: process.env.REDIRECT_URI,
     token_endpoint: process.env.TOKEN_ENDPOINT,
-    //grant_type: "authorization_code",
+    //scope: process.env.SCOPE,
+  },
+  github: {
+    client_id: process.env.GIT_CLIENT_ID,
+    client_secret: process.env.GIT_CLIENT_SECRET,
+    redirect_uri: process.env.GIT_REDIRECT_URI,
+    token_endpoint: process.env.GIT_TOKEN_ENDPOINT,
+    user_endpoint: "http://api.github.com/user",
+    //scope: process.env.GIT_SCOPE,
   },
   /*   facebook: {
     clientId: "",
@@ -37,24 +45,46 @@ router.post("/login", async (req, res) => {
     client_secret: config[provider].client_secret,
     redirect_uri: config[provider].redirect_uri,
     grant_type: "authorization_code",
-    scope: "openid",
+    //scope: config[provider].scope,
   });
 
   if (!response) return res.sendStatus(500);
   if (response.status !== 200) return res.sendStatus(401);
+  console.log("ACCESSTOKEN1: ", response.data);
 
-  const decoded = jwt.decode(response.data.id_token);
-  if (!decoded) return res.sendStatus(500);
+  let openId;
+  const onlyOauth = !response.data.id_token;
+  if (onlyOauth) {
+    let token = response.data.split("=")[1].split("&")[0];
+    console.log("ACCESSTOKEN: ", token);
+    const userResponse = await http.post(
+      config[provider].user_endpoint,
+      {},
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
+    if (!response) return res.sendStatus(500);
+    if (response.status !== 200) return res.sendStatus(401);
+    console.log("userRESPONSE DATA: ", userResponse.data.id);
+    openId = userResponse.data.id;
+  } else {
+    const decoded = jwt.decode(response.data.id_token);
+    if (!decoded) return res.sendStatus(500);
+    openId = decoded.sub;
+  }
 
   //megkeresi a user-t, ha nincs csinál egyet:
   const key = "providers." + provider;
   const user = await User.findOneAndUpdate(
-    { [key]: decoded.sub },
-    { providers: { [provider]: decoded.sub } },
-    { new: true }
+    { [key]: openId },
+    { providers: { [provider]: openId } },
+    { new: true, upsert: true }
   );
   const sessionToken = jwt.sign(
-    { userId: user.id, providers: user.providers },
+    { userId: user._id, providers: user.providers },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
