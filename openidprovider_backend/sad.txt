@@ -1,0 +1,6 @@
+
+//Google
+https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=423125049963-vnhlm59vvirdjsquu0efhqvq5u91orks.apps.googleusercontent.com&scope=openid%20email&redirect_uri=http://localhost:3000/callback
+
+//GitHub
+https://github.com/login/oauth/authorize?response_type=code&client_id=ec24a971e0b051cb18f4&scope=user%20email&redirect_uri=http://localhost:3000/callback/github
