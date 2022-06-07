@@ -11,7 +11,8 @@ const config = {
     client_secret: process.env.CLIENT_SECRET,
     redirect_uri: process.env.REDIRECT_URI,
     token_endpoint: process.env.TOKEN_ENDPOINT,
-    //scope: process.env.SCOPE,
+    user_endpoint: null,
+    user_id: null,
   },
   github: {
     client_id: process.env.GIT_CLIENT_ID,
@@ -19,7 +20,7 @@ const config = {
     redirect_uri: process.env.GIT_REDIRECT_URI,
     token_endpoint: process.env.GIT_TOKEN_ENDPOINT,
     user_endpoint: "http://api.github.com/user",
-    //scope: process.env.GIT_SCOPE,
+    user_id: "id",
   },
   /*   facebook: {
     clientId: "",
@@ -39,24 +40,30 @@ router.post("/login", async (req, res) => {
   if (!Object.keys(config).includes(provider))
     return res.status(400).send("Wrong payload!");
 
-  const response = await http.post(config[provider].token_endpoint, {
-    code: code,
-    client_id: config[provider].client_id,
-    client_secret: config[provider].client_secret,
-    redirect_uri: config[provider].redirect_uri,
-    grant_type: "authorization_code",
-    //scope: config[provider].scope,
-  });
+  const response = await http.post(
+    config[provider].token_endpoint,
+    {
+      code: code,
+      client_id: config[provider].client_id,
+      client_secret: config[provider].client_secret,
+      redirect_uri: config[provider].redirect_uri,
+      grant_type: "authorization_code",
+    },
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
 
   if (!response) return res.sendStatus(500);
   if (response.status !== 200) return res.sendStatus(401);
-  console.log("ACCESSTOKEN1: ", response.data);
 
   let openId;
   const onlyOauth = !response.data.id_token;
   if (onlyOauth) {
-    let token = response.data.split("=")[1].split("&")[0];
-    console.log("ACCESSTOKEN: ", token);
+    //let token = response.data.split("=")[1].split("&")[0];
+    let token = response.data.access_token;
     const userResponse = await http.post(
       config[provider].user_endpoint,
       {},
@@ -68,8 +75,8 @@ router.post("/login", async (req, res) => {
     );
     if (!response) return res.sendStatus(500);
     if (response.status !== 200) return res.sendStatus(401);
-    console.log("userRESPONSE DATA: ", userResponse.data.id);
-    openId = userResponse.data.id;
+    const id = config[provider].user_id;
+    openId = userResponse.data[id];
   } else {
     const decoded = jwt.decode(response.data.id_token);
     if (!decoded) return res.sendStatus(500);
