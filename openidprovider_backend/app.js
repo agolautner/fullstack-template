@@ -1,13 +1,14 @@
 const express = require("express");
+require('express-async-errors');
+const app = express();
 const cors = require("cors");
 
-const { logger } = require("./middlewares/logger");
 const { auth } = require("./middlewares/auth");
 const { errorHandler } = require("./middlewares/errorHandler");
 const dashboardRoutes = require("./routes/dashboard");
 const userRoutes = require("./routes/user");
+const morgan = require("morgan");
 
-const app = express();
 
 app.use(
   cors({
@@ -16,7 +17,7 @@ app.use(
 );
 app.use(express.json());
 
-app.use(logger);
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
 app.use("/api/dashboards", dashboardRoutes);
 app.use("/api/user", userRoutes);

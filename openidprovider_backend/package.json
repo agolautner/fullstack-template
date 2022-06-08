@@ -4,8 +4,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.3.4"
+    "mongoose": "^6.3.4",
+    "morgan": "^1.10.0",
+    "pino": "^8.0.0",
+    "pino-logflare": "^0.3.12"
   },
   "devDependencies": {
     "jest": "^28.1.0",
@@ -13,7 +17,7 @@
     "supertest": "^6.2.3"
   },
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "test": "jest",
     "test:watch": "jest --watch"
   }
