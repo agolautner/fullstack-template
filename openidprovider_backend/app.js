@@ -3,7 +3,7 @@ require('express-async-errors');
 const app = express();
 const cors = require("cors");
 
-const { auth } = require("./middlewares/auth");
+const auth = require("./middlewares/auth");
 const { errorHandler } = require("./middlewares/errorHandler");
 const dashboardRoutes = require("./routes/dashboard");
 const userRoutes = require("./routes/user");
