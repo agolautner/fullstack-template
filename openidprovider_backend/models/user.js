@@ -15,9 +15,9 @@ const userSchema = new mongoose.Schema({
   username: { type: String }, //empty string NONO!  !!unique
   email: { type: String }, //empty string NONO! + validation
   providers: {
-    google: { type: String },
-    facebook: { type: String },
-    github: { type: String },
+    google: { type: String, sparse: true, unique: true },
+    facebook: { type: String, sparse: true, unique: true },
+    github: { type: String, sparse: true, unique: true }
   },
   dashboards: [dashboardSchema], //empty list as default?
 });

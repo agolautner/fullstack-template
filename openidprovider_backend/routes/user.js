@@ -1,35 +1,10 @@
-require("dotenv").config();
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const httpModule = require("../utils/http");
 const http = httpModule();
-const auth = require('../middlewares/auth')
-
-const config = {
-  google: {
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-    token_endpoint: process.env.GOOGLE_TOKEN_ENDPOINT,
-    user_endpoint: process.env.GOOGLE_USER_ENDPOINT,
-    user_id: process.env.GOOGLE_USER_ID,
-  },
-  github: {
-    client_id: process.env.GIT_CLIENT_ID,
-    client_secret: process.env.GIT_CLIENT_SECRET,
-    redirect_uri: process.env.GIT_REDIRECT_URI,
-    token_endpoint: process.env.GIT_TOKEN_ENDPOINT,
-    user_endpoint: process.env.GIT_USER_ENDPOINT,
-    user_id: process.env.GIT_USER_ID,
-  },
-  /*   facebook: {
-    clientId: "",
-    clientSecret: "",
-    redirectUri: "",
-    tokenEndpoint: "",
-  }, */
-};
+const auth = require('../middlewares/auth');
+const config = require('../app.config');
 
 router.post("/login", auth({block: false}), async (req, res) => {
   const payload = req.body;
@@ -38,15 +13,15 @@ router.post("/login", auth({block: false}), async (req, res) => {
   const code = payload.code;
   const provider = payload.provider;
   if (!(code && provider)) return res.sendStatus(400);
-  if (!Object.keys(config).includes(provider)) return res.sendStatus(400);
+  if (!Object.keys(config.auth).includes(provider)) return res.sendStatus(400);
 
   const response = await http.post(
-    config[provider].token_endpoint,
+    config.auth[provider].token_endpoint,
     {
       code: code,
-      client_id: config[provider].client_id,
-      client_secret: config[provider].client_secret,
-      redirect_uri: config[provider].redirect_uri,
+      client_id: config.auth[provider].client_id,
+      client_secret: config.auth[provider].client_secret,
+      redirect_uri: config.auth[provider].redirect_uri,
       grant_type: "authorization_code",
     },
     {
@@ -68,7 +43,7 @@ router.post("/login", auth({block: false}), async (req, res) => {
     //let token = response.data.split("=")[1].split("&")[0];
     let token = response.data.access_token;
     const userResponse = await http.post(
-      config[provider].user_endpoint,
+      config.auth[provider].user_endpoint,
       {},
       {
         headers: {
@@ -78,7 +53,7 @@ router.post("/login", auth({block: false}), async (req, res) => {
     );
     if (!response) return res.sendStatus(500);
     if (response.status !== 200) return res.sendStatus(401);
-    const id = config[provider].user_id;
+    const id = config.auth[provider].user_id;
     openId = userResponse.data[id];
   } else {
     const decoded = jwt.decode(response.data.id_token);
