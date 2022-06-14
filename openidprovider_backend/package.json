@@ -12,13 +12,14 @@
     "pino-logflare": "^0.3.12"
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.21.1",
     "jest": "^28.1.0",
     "mongodb-memory-server": "^8.6.0",
     "supertest": "^6.2.3"
   },
   "scripts": {
     "start": "node server.js",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:watch": "jest --watch"
   }
 }

@@ -4,6 +4,7 @@ const mockserver = require("supertest");
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const { startDb, stopDb, deleteAll } = require("./util/inMemoryDb");
+const { setupGoogleSuccessResponse, setupGoogleErrorResponse } = require('./util/httpMock');
 
 describe("/api/login POST tests", () => {
   let connection;
@@ -71,5 +72,46 @@ describe("/api/login POST tests", () => {
 
     //then
     expect(response.status).toBe(400);
+  });
+
+  test("returns 200 with JWT with valid provider (user not created)", async () => {
+    //given
+    const code = 'random';
+    const provider = 'google';
+    const googleUserId = '1232343245'
+
+    setupGoogleSuccessResponse(googleUserId);
+
+    //when
+    const response = await client.post("/api/user/login").send({
+      code, provider
+    });
+
+    //then
+    expect(response.status).toBe(200);
+    const responseToken = jwt.decode(response.body.sessionToken);
+    expect(responseToken.providers.google).toBe(googleUserId);
+    const users = await User.find();
+    expect(users).toStrictEqual([]);
+  });
+
+  test("returns 401 with JWT with invalid code (user not created)", async () => {
+    //given
+    const code = 'random';
+    const provider = 'google';
+    const googleUserId = '1232343245'
+
+    setupGoogleErrorResponse(googleUserId);
+
+    //when
+    const response = await client.post("/api/user/login").send({
+      code, provider
+    });
+    
+    //then
+    expect(response.status).toBe(401);
+    expect(response.body).toStrictEqual({});
+    const users = await User.find();
+    expect(users).toStrictEqual([]);
   });
 });
