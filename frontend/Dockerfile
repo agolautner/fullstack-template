@@ -1,5 +1,6 @@
-FROM nginx:1.15.2-alpine
-COPY ./build /var/www
-COPY ./nginx.conf /etc/nginx/nginx.conf
+FROM nginx:alpine
+COPY ./build /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d
 EXPOSE 80
-ENTRYPOINT ["nginx","-g","daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
