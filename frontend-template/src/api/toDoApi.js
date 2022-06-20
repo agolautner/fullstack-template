@@ -1,8 +1,9 @@
 import axios from 'axios';
+import config from '../app.config';
 
 export const toDoApi = () => {
   const instance = axios.create({
-    baseURL: "http://localhost:4000/api",
+    baseURL: config.todoapi,
     timeout: 3000,
   });
   const post = async (path, data) => {

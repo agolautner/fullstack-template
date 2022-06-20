@@ -2,6 +2,7 @@ import React, { useContext, createContext, useState, useEffect} from 'react';
 import http from 'axios';
 import jwt_decode from 'jwt-decode';
 import { toDoApi } from '../api/toDoApi';
+import config from '../app.config';
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -18,11 +19,11 @@ const AuthProvider = ({ children }) => {
     }, [])
     
     const auth = () => {
-        const googleBaseUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+        const googleBaseUrl = config.google_base_url;
         const searchParams = new URLSearchParams();
-        searchParams.append('client_id', '145780615357-3qqh0fjm48r5t2af090fjdpqi7dl9s40.apps.googleusercontent.com')
+        searchParams.append('client_id', config.google_client_id);
         searchParams.append('scope', 'openid');
-        searchParams.append('redirect_uri', 'http://localhost:3000/callback');
+        searchParams.append('redirect_uri', window.location.origin + '/callback');
         searchParams.append('response_type', 'code');
         searchParams.append('prompt', 'select_account');
 
@@ -33,7 +34,7 @@ const AuthProvider = ({ children }) => {
 
     const login = async (code, provider) => {
         try {
-            const res = await http.post('http://localhost:4000/api/user/login', { code, provider });
+            const res = await post('/user/login', { code, provider });
             setToken(res.data.sessionToken);
             localStorage.setItem('token', res.data.sessionToken);
             setUser(jwt_decode(res.data.sessionToken));
