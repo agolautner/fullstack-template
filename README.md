@@ -1,1 +1,3 @@
-# fullstack-app-template
+# fullstack-template
+
+Full-stack application template with OpenID.
