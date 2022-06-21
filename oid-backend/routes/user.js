@@ -2,6 +2,7 @@ const router = require("express").Router();
 const User = require("../models/user");
 const Client = require("../models/client");
 // const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 
 router.post("/signup", async (req, res) => {
@@ -42,6 +43,17 @@ router.post("/login", async (req, res) => {
   await client.save();
 
   res.json({ code })
+});
+
+router.post("/token", async (req, res) => {
+  if (!req.body.code || !req.body.client_id || !req.body.redirect_uri || !req.body.client_secret) return sendStatus(400);
+  const client = await Client.findOne({ client_id: req.body.client_id, client_secret: req.body.client_secret });
+  if (!client ) return sendStatus(401);
+  const user = client.users.find(u => u.code === req.body.code);
+  if (!user) res.sendStatus(401);
+  
+  const token = jwt.sign({ sub: user.userId }, "shhh", {expiresIn: "1h"});
+  res.json({ id_token: token });
 });
 
 module.exports = router;

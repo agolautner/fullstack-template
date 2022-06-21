@@ -25,7 +25,12 @@ const Home = () => {
             <button onClick={globalIncrement}>+</button>
             <p>{globalValue}</p>
             
-            {token ? 'welcome!' : <button onClick={auth}>login with google</button>}
+            {token ? 'welcome!' : (
+                <>
+                    <button onClick={() => auth('google')}>Login with Google</button>
+                    <button onClick={() => auth('oid')}>Login with my oID</button>
+                </>
+            )}
         </>
   )
 }

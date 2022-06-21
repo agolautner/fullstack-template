@@ -18,19 +18,18 @@ const AuthProvider = ({ children }) => {
       }
     }, [])
     
-    const auth = () => {
-        const googleBaseUrl = config.google_base_url;
+    const auth = (provider="google") => {
+        const googleBaseUrl = config[provider].base_url;
         const searchParams = new URLSearchParams();
-        searchParams.append('client_id', config.google_client_id);
+        searchParams.append('client_id', config[provider].client_id);
         searchParams.append('scope', 'openid');
-        searchParams.append('redirect_uri', window.location.origin + '/callback');
+        searchParams.append('redirect_uri', window.location.origin + '/callback/' + provider);
         searchParams.append('response_type', 'code');
         searchParams.append('prompt', 'select_account');
 
         const fullUrl = googleBaseUrl + '?' + searchParams.toString();
         window.location.href = fullUrl;
     };
-
 
     const login = async (code, provider) => {
         try {

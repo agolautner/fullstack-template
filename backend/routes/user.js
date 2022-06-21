@@ -29,10 +29,10 @@ router.post("/login", auth({block: false}), async (req, res) => {
       },
     }
   );
-  console.log('resp: ', response);
 
   if (!response) return res.sendStatus(500);
   if (response.status !== 200) return res.sendStatus(401); //amit a google ad, nem 200-as, akkor nem tudjuk azonositani
+  console.log(response.data);
 
   //github oauth flowjahoz
   let openId;
@@ -51,7 +51,7 @@ router.post("/login", auth({block: false}), async (req, res) => {
       }
     );
     if (!response) return res.sendStatus(500);
-    if (response.status !== 200) return res.sendStatus(401);
+    if (response.status !== 200) return res.status(401).send('oid provider error');
     const id = config.auth[provider].user_id;
     openId = userResponse.data[id];
   } else {

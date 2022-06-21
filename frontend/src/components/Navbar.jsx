@@ -19,7 +19,12 @@ const Navbar = () => {
                 <button onClick={() => nav('/profile')}>PROFILE</button>
             </div>
             <div>
-                {token ? <button onClick={logout}>LOGOUT</button> : <button onClick={auth}>LOGIN</button>}
+                {token ? <button onClick={logout}>LOGOUT</button> : (
+                    <>
+                        <button onClick={() => auth('google')}>GOOGLE LOGIN</button>
+                        <button onClick={() => auth('oid')}>MY LOGIN</button>
+                    </>
+                )}
             </div>
         </nav>
   )
