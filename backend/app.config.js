@@ -9,8 +9,8 @@ const config = {
           user_id: process.env.GOOGLE_USER_ID || null,
         },
         oid: {
-          client_id: process.env.OID_CLIENT_ID || '123456',
-          client_secret: process.env.OID_CLIENT_SECRET || '654321',
+          client_id: process.env.OID_CLIENT_ID || 'mycustomclientid',
+          client_secret: process.env.OID_CLIENT_SECRET || 'mycustomclientsecret',
           redirect_uri: process.env.OID_REDIRECT_URI || 'http://localhost:3000/callbackoid',
           token_endpoint: process.env.OID_TOKEN_ENDPOINT || 'http://localhost:4000/token',
           user_endpoint: process.env.OID_USER_ENDPOINT || null,

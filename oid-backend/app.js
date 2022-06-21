@@ -18,8 +18,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-const dashboardRoutes = require("./routes/dashboard");
-app.use("/api/dashboards", dashboardRoutes);
+const clientRoutes = require("./routes/client");
+app.use("/api/client", clientRoutes);
 const userRoutes = require("./routes/user");
 app.use("/api/user", userRoutes);
 
